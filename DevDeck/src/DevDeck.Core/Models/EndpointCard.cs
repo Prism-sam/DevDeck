@@ -1,22 +1,43 @@
 namespace DevDeck.Core.Models;
-
-// Entidade principal do domínio. Representa um endpoint HTTP que o usuário deseja monitorar.
-//
-// Propriedades esperadas:
-//   Id          – identificador único (Guid)
-//   Name        – nome amigável exibido no card do dashboard
-//   Url         – URL completa do endpoint (ex: "https://api.exemplo.com/health")
-//   Method      – método HTTP (GET, POST, PUT, etc.) — use string ou um enum HttpMethod próprio
-//   Headers     – dicionário de headers a enviar na requisição (chave/valor)
-//   Body        – corpo JSON opcional a enviar (relevante para POST/PUT)
-//   IntervalSeconds – intervalo entre verificações, em segundos (ex: 30)
-//   CreatedAt   – data/hora de criação do card
-//
-// Regras de domínio a implementar:
-//   - Url deve ser uma URI absoluta válida
-//   - IntervalSeconds deve ser >= 5
-//   - Method deve ser um valor HTTP válido
 public class EndpointCard
 {
-    // TODO: implementar propriedades e validações
+    public Guid Id { get; }
+    public string Name { get; }
+    public Uri Url { get; }
+    public string Method { get; }
+    public Dictionary<string, string> Headers { get; }
+    public string? Body { get; }
+    public double IntervalSeconds { get; }
+    public DateTime CreatedAt { get; }
+
+    public EndpointCard(Guid id, string name, Uri url, string method, Dictionary<string, string> headers, string? body, double intervalSeconds)
+    {
+
+        var validMethods = new[] { "GET", "POST", "PUT", "DELETE", "PATCH" };
+
+        if (!url.IsAbsoluteUri)
+        {
+            throw new ArgumentException("Url deve ser uma URI absoluta válida.");
+
+        }
+        else if (intervalSeconds < 5)
+        {
+            throw new ArgumentException("IntervalSeconds deve ser maior ou igual a 5.");
+        }
+        else if (!validMethods.Contains(method))
+        {
+            throw new ArgumentException("Método deve ser um valor HTTP válido.");
+        }
+
+        Id = Guid.NewGuid();
+        Name = name;
+        Url = url;
+        Method = method.ToString();
+        Headers = headers;
+        Body = body;
+        IntervalSeconds = intervalSeconds;
+        CreatedAt = DateTime.UtcNow;
+
+    }
+
 }
